@@ -29,21 +29,13 @@ extension Date {
     
     
     // MARK: - Component
-    var second: Int {
-        let diffSeconds = self.timeIntervalSinceReferenceDate - Date().timeIntervalSinceReferenceDate
-        return Int(diffSeconds)
-    }
+    var second: Int { Calendar.current.component(.second, from: self) }
+    var minute: Int { Calendar.current.component(.minute, from: self) }
+    var hour: Int { Calendar.current.component(.hour, from: self) }
+    var date: Int { Calendar.current.component(.day, from: self) }
+    var month: Int { Calendar.current.component(.month, from: self) }
+    var year: Int { Calendar.current.component(.year, from: self) }
     
-    var minute: Int {
-        Int((self.timeIntervalSince1970/60).truncatingRemainder(dividingBy: 60))
-    }
-    
-    var hour: Int {
-        let currentDate = Date().timeIntervalSince1970
-        let postDate = self.timeIntervalSince1970
-        let timezoneEpochOffset = currentDate - postDate
-        return Int((timezoneEpochOffset/3600).truncatingRemainder(dividingBy: 3600))
-    }
     
     var dayShort: String {
         let dateFormatter = DateFormatter()
@@ -57,18 +49,10 @@ extension Date {
         return dateFormatter.string(from: self)
     }
     
-    var date: Int {
-        return Calendar.current.component(.day, from: self)
-    }
-    
     var monthName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM"
         return dateFormatter.string(from: self)
-    }
-    
-    var month: Int {
-        return Calendar.current.component(.month, from: self)
     }
     
     var getTotalDaysInMonth: Int {
@@ -76,10 +60,6 @@ extension Date {
             return range.count
         }
         return 0
-    }
-    
-    var year: NSNumber {
-        return Calendar.current.component(.year, from: self) as NSNumber
     }
     
     
@@ -111,7 +91,7 @@ extension Date {
     
     var timeFromNow: String {
         
-        let dayHourMinuteSecond: Set<Calendar.Component> = [.day, .month, .year, .hour, .minute]
+        let dayHourMinuteSecond: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute]
         let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: self, to: Date())
         
         if let year = difference.year, year > 0 { return year > 1 ? "\(year) Years" : "\(year) Year" }

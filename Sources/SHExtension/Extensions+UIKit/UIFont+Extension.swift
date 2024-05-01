@@ -14,4 +14,11 @@ extension UIFont {
         return UIFont(name: type, size: size) ?? .systemFont(ofSize: 17)
     }
     
+    static func printAllFonts() {
+        for family in UIFont.familyNames.sorted() {
+            let names = UIFont.fontNames(forFamilyName: family)
+            print("Family: \(family) Font names: \(names)")
+        }
+    }
+    
 }

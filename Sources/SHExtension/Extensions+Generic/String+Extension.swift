@@ -24,6 +24,27 @@ extension String {
         return UIApplication.shared.canOpenURL(url)
     }
     
+    public var firstURL: URL? {
+        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let matches = detector?.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+        return matches?.first?.url
+    }
+    
+    public var encodeUrl: String {
+        return self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
+    }
+    
+    
+    static func randomString(_ length: Int = 12) -> String {
+        let charactersSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&0123456789"
+        var thePassword = ""
+        for _ in 0 ..< 12 {
+            thePassword.append(charactersSet.randomElement()!)
+        }
+        return thePassword
+    }
+    
+    
     public func matches(_ regex: String) -> Bool {
         return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
     }
@@ -37,27 +58,6 @@ extension String {
         return self
     }
     
-    public var firstURL: URL? {
-        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let matches = detector?.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
-        return matches?.first?.url
-    }
-    
-    
-    public var encodeUrl: String {
-        return self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
-    }
-    
-    static var randomString: String {
-        let charactersSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&0123456789"
-        var thePassword = ""
-        for _ in 0 ..< 12 {
-            thePassword.append(charactersSet.randomElement()!)
-        }
-        return thePassword
-    }
-    
-    // MARK: chat
     public func safeText(_ moderationArray: [String]) -> String {
         var localString = self
         for str in moderationArray {
@@ -66,21 +66,7 @@ extension String {
         return localString
     }
     
-    
-    public var ageFromTimeStatmp: String {
-        guard let timeInterval = TimeInterval(self) else {return "0 Day"}
-        let date = Date(timeIntervalSince1970: timeInterval)
-        return date.timeFromNow
-    }
-    
-    public var ageFromDOB: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        guard let date = dateFormatter.date(from: self) else {return "0 Day"}
-        return date.timeFromNow
-    }
-    
-    public func formatDate(inputFormat: String, outputFormat: String) ->  String{
+    public func formatDate(inputFormat: String, outputFormat: String) ->  String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = inputFormat
         if let date = dateFormatter.date(from: self){
