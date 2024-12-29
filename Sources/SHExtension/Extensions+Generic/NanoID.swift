@@ -23,7 +23,7 @@ import Foundation
 /// let idFirst = nanoID.new()
 /// let idSecond = nanoID.new()
 
-class NanoID {
+public class NanoID {
     
     // Shared Parameters
     private var size: Int
@@ -95,7 +95,7 @@ fileprivate class NanoIDHelper {
     }
 }
 
-enum NanoIDAlphabet {
+public enum NanoIDAlphabet {
     case urlSafe
     case uppercasedLatinLetters
     case lowercasedLatinLetters

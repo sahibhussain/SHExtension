@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Data {
+public extension Data {
     
     init?(hexString: String) {
         let length = hexString.count / 2

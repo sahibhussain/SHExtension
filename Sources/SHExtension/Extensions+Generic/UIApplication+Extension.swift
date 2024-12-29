@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension UIApplication {
+public extension UIApplication {
     
     static var fullWidth: CGFloat {
         return UIScreen.main.bounds.width
@@ -18,11 +18,11 @@ extension UIApplication {
     }
     
     
-    public var topVC: UIViewController? {
+    var topVC: UIViewController? {
         return topViewController(rootVC)
     }
     
-    public var rootVC: UIViewController? {
+    var rootVC: UIViewController? {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return nil }
         return windowScene.windows.first?.rootViewController
     }
@@ -42,7 +42,7 @@ extension UIApplication {
         return base
     }
     
-    public func showAlert(_ msg: String,
+    func showAlert(_ msg: String,
                           title: String = "",
                           actionText: String? = nil,
                           cancelText: String = "OK",

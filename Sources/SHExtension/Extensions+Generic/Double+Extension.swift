@@ -7,17 +7,16 @@
 
 import Foundation
 
-extension Double {
+public extension Double {
     
-    public func epochToDate(formatter: String) -> String {
+    func epochToDate(formatter: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = formatter
         let formattedDate = Date(milliseconds: Int64(self))
         return dateFormatter.string(from: formattedDate)
     }
     
-    public var roundUp: String {
-        String(format: "%.1f", self)
-    }
+    var roundUp: String { String(format: "%.1f", self) }
+    var roundUp2: String { String(format: "%.2f", self) }
     
 }

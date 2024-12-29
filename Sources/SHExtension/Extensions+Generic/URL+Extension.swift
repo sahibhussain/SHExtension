@@ -9,7 +9,7 @@ import Foundation
 import AVKit
 
 
-extension URL {
+public extension URL {
     
     func createVideoThumbnail(completion: ((UIImage) -> Void)? = nil) {
         

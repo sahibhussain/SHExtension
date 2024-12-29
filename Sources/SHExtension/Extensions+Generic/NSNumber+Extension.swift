@@ -7,20 +7,20 @@
 
 import Foundation
 
-extension NSNumber {
+public extension NSNumber {
     
-    public func dateStringFromTimeStamp(_ outputFormat: String) -> String {
+    func dateStringFromTimeStamp(_ outputFormat: String) -> String {
         let date = Date(milliseconds: self.int64Value)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = outputFormat
         return dateFormatter.string(from: date)
     }
     
-    public var dateFromTimeStamp: Date {
+    var dateFromTimeStamp: Date {
         return Date(milliseconds: self.int64Value)
     }
     
-    public var displayValue: String {
+    var displayValue: String {
         return self.doubleValue.roundUp
     }
     

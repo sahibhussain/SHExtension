@@ -7,16 +7,27 @@
 
 import Foundation
 
-extension Date {
+public enum PopularDateFormat {
     
-    enum PopularFormat: String {
-        
-        case humanReadableDate = "dd/MM/yyyy"
-        case databaseReadableDate = "yyyy-MM-dd"
-        case humanReadableTime = "hh:mm a"
-        case humanReadableTime24h = "HH:mm"
-        
+    case humanReadableDate
+    case databaseReadableDate
+    case humanReadableTime
+    case humanReadableTime24h
+    case custom(output: String)
+    
+    var output: String {
+        switch self {
+        case .humanReadableDate: return "dd/MM/yyyy"
+        case .databaseReadableDate: return "yyyy-MM-dd"
+        case .humanReadableTime: return "hh:mm a"
+        case .humanReadableTime24h: return "HH:mm"
+        case .custom(output: let output): return output
+        }
     }
+    
+}
+
+public extension Date {
     
     // MARK: - millisecond time
     init(milliseconds: Int64) {
@@ -36,25 +47,6 @@ extension Date {
     var month: Int { Calendar.current.component(.month, from: self) }
     var year: Int { Calendar.current.component(.year, from: self) }
     
-    
-    var dayShort: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEE"
-        return dateFormatter.string(from: self)
-    }
-    
-    var dayFull: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE"
-        return dateFormatter.string(from: self)
-    }
-    
-    var monthName: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM"
-        return dateFormatter.string(from: self)
-    }
-    
     var getTotalDaysInMonth: Int {
         if let range = Calendar.current.range(of: .day, in: .month, for: self) {
             return range.count
@@ -64,15 +56,10 @@ extension Date {
     
     
     // MARK: - format
-    func formattedString(_ outputFormat: String) -> String {
+    func formattedString(_ popularFormat: PopularDateFormat) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = outputFormat
-        return dateFormatter.string(from: self)
-    }
-    
-    func formattedString(_ popularFormat: PopularFormat) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = popularFormat.rawValue
+        dateFormatter.dateFormat = popularFormat.output
+        dateFormatter.locale = .init(identifier: "en_US_POSIX")
         return dateFormatter.string(from: self)
     }
     
@@ -89,16 +76,16 @@ extension Date {
         return Calendar.current.date(byAdding: components, to: startOfDay)!
     }
     
-    var timeFromNow: String {
+    func timeFromNow(with suffix: String) -> String {
         
         let dayHourMinuteSecond: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute]
         let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: self, to: Date())
         
-        if let year = difference.year, year > 0 { return year > 1 ? "\(year) Years" : "\(year) Year" }
-        if let month = difference.month, month > 0 { return month > 1 ? "\(month) Months" : "\(month) Month" }
-        if let day = difference.day, day > 0 { return day > 1 ? "\(day) Days" : "\(day) Day" }
-        if let hour = difference.hour, hour > 0 { return hour > 1 ? "\(hour) Hrs" : "1 Hr" }
-        if let min = difference.minute, min > 0 { return min > 1 ? "\(min) Mins" : "1 Min"}
+        if let year = difference.year, year > 0 { return (year > 1 ? "\(year) Years" : "\(year) Year") + suffix }
+        if let month = difference.month, month > 0 { return (month > 1 ? "\(month) Months" : "\(month) Month") + suffix }
+        if let day = difference.day, day > 0 { return (day > 1 ? "\(day) Days" : "\(day) Day") + suffix }
+        if let hour = difference.hour, hour > 0 { return (hour > 1 ? "\(hour) Hrs" : "1 Hr") + suffix }
+        if let min = difference.minute, min > 0 { return (min > 1 ? "\(min) Mins" : "1 Min") + suffix }
         return "Just now"
         
     }
