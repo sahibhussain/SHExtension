@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension Font {
+public extension Font {
     
     static func fontFor(_ type: String, size: CGFloat) -> Font {
         return Font.custom(type, size: size)

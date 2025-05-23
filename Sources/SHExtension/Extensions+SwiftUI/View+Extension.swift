@@ -8,40 +8,7 @@
 import Foundation
 import SwiftUI
 
-extension View{
-    
-    func placeholder<Content: View>(
-        when shouldShow: Bool,
-        alignment: Alignment = .leading,
-        @ViewBuilder placeholder: () -> Content) -> some View {
-
-        ZStack(alignment: alignment) {
-            placeholder().opacity(shouldShow ? 1 : 0)
-            self
-        }
-    }
-    
-    @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
-        if hidden {
-            if !remove {
-                self.hidden()
-            }
-        } else {
-            self
-        }
-    }
-    
-    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
-    }
-    
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
+public extension View{
     
     func snapshot() -> UIImage {
         let controller = UIHostingController(rootView: self)
@@ -62,79 +29,45 @@ extension View{
         self.modifier(FlippedUpsideDown())
     }
     
-}
-
-
-struct FlippedUpsideDown: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .rotationEffect(.radians(.pi))
-            .scaleEffect(x: -1, y: 1, anchor: .center)
-    }
-}
-
-extension View {
-    
-    func centerCropped() -> some View {
-        GeometryReader { geo in
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+            
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
             self
-            .scaledToFill()
-            .frame(width: geo.size.width, height: geo.size.height)
-            .clipped()
+        }
+    }
+    
+    @available(iOS 16.0, *)
+    func snapshot(_ size: CGSize = .init(width: 300, height: 300)) -> UIImage? {
+        let renderer = ImageRenderer(content: self)
+        renderer.proposedSize = ProposedViewSize(width: size.width, height: size.height)
+        return renderer.uiImage
+    }
+    
+    @available(iOS 16.0, *)
+    func snapshotUrl(_ size: CGSize = .init(width: 300, height: 300)) -> URL? {
+        guard let image = snapshot(size) else { return nil }
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let fileURL = tempDirectory.appendingPathComponent("shared-image.jpg")
+        do {
+            guard let data = image.jpegData(compressionQuality: 0.9) else { return nil }
+            try data.write(to: fileURL)
+            return fileURL
+        } catch {
+            return nil
         }
     }
     
 }
 
 
-struct ScrollViewPagingModifier: ViewModifier {
-    
-    var enabled: Bool
-    
-    func body(content: Content) -> some View {
+public struct FlippedUpsideDown: ViewModifier {
+    public func body(content: Content) -> some View {
         content
-            .onAppear {
-                UIScrollView.appearance().isPagingEnabled = enabled
-            }
-            .onDisappear {
-                UIScrollView.appearance().isPagingEnabled = !enabled
-            }
-    }
-}
-
-extension View {
-    func isPagingEnabled(_ enabled: Bool) -> some View {
-        modifier(ScrollViewPagingModifier(enabled: enabled))
-    }
-}
-
-
-struct FontWithLineHeight: ViewModifier {
-    let font: UIFont
-    let lineHeight: CGFloat
-
-    func body(content: Content) -> some View {
-        content
-            .font(Font(font))
-            .lineSpacing(lineHeight - font.lineHeight)
-            .padding(.vertical, (lineHeight - font.lineHeight) / 2)
-    }
-}
-
-extension View {
-    func fontWithLineHeight(font: UIFont, lineHeight: CGFloat) -> some View {
-        ModifiedContent(content: self, modifier: FontWithLineHeight(font: font, lineHeight: lineHeight))
-    }
-}
-
-
-struct RoundedCorner: Shape {
-
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
+            .rotationEffect(.radians(.pi))
+            .scaleEffect(x: -1, y: 1, anchor: .center)
     }
 }
